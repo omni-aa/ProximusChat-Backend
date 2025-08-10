@@ -9,3 +9,8 @@ yarn-error.log*
 .pnp.js
 
 .vscode/*
+
+.idea/
+package-lock.json
+/src/chat.db
+/src/uploads
