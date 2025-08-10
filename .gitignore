@@ -14,3 +14,4 @@ yarn-error.log*
 package-lock.json
 /src/chat.db
 /src/uploads
+.DS_Store
