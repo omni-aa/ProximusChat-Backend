@@ -8,6 +8,8 @@ import path from "path";
 import fs from "fs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import sanitizeText from "./sanitizeTextInput";
+import {db} from "./db-connector/main-db";
 
 const app = express();
 const server = http.createServer(app);
@@ -22,7 +24,7 @@ app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = "your_super_secret_key";
-const SALT_ROUNDS = 10;
+export const SALT_ROUNDS = 10;
 
 const UPLOADS_DIR = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -53,10 +55,7 @@ const upload = multer({
 
 app.use("/uploads", express.static(UPLOADS_DIR));
 
-const db = new sqlite3.Database("./chat.db", (err) => {
-    if (err) console.error("DB error:", err);
-    else console.log("Connected to SQLite");
-});
+
 
 // Create tables
 db.run(`
@@ -90,35 +89,6 @@ db.run(`
 // Insert default channels if not exist
 
 
-// Type definitions
-interface UserRow {
-    id: number;
-    username: string;
-    password_hash: string;
-    created_at: string;
-}
-
-interface ChannelRow {
-    id: number;
-    name: string;
-}
-
-interface MessageRow {
-    id: number;
-    channel: string;
-    user: string;
-    message: string;
-    fileUrl?: string | null;
-    fileName?: string | null;
-    timestamp: string;
-}
-
-function sanitizeText(input: string, maxLen: number = 50): string {
-    let clean = input.trim();
-    clean = clean.replace(/[^a-zA-Z0-9 _-]/g, "");
-    if (clean.length > maxLen) clean = clean.substring(0, maxLen);
-    return clean;
-}
 
 // Signup endpoint
 app.post("/signup", (req, res) => {
